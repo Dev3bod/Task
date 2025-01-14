@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Client</title>
+</head>
+<body>
+    <h1>Items</h1>
+    <ul id="item-list"></ul>
+
+    <h2>Add New Item</h2>
+    <form id="item-form">
+        <input type="text" id="item-name" placeholder="Name" required />
+        <input type="text" id="item-description" placeholder="Description" required />
+        <button type="submit">Add Item</button>
+    </form>
+
+    <script>
+        const apiUrl = 'http://localhost:3000/api/items';
+
+        
+        async function fetchItems() {
+            const response = await fetch(apiUrl);
+            const items = await response.json();
+            const itemList = document.getElementById('item-list');
+            itemList.innerHTML = '';
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.name}: ${item.description}`;
+                itemList.appendChild(li);
+            });
+        }
+
+        
+        document.getElementById('item-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('item-name').value;
+            const description = document.getElementById('item-description').value;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, description }),
+            });
+
+            if (response.ok) {
+                fetchItems();
+                document.getElementById('item-form').reset();
+            }
+        });
+
+        
+        fetchItems();
+    </script>
+</body>
+</html>
